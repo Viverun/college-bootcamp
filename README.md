@@ -37,7 +37,7 @@ The project is built using the following technologies:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Viverun/College-bootcamp.git
+   git clone https://github.com/Viverun/college-bootcamp.git
    ```
 
 2. Navigate to the project directory:
