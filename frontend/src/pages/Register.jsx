@@ -1,34 +1,37 @@
 import React, { useState } from "react";
+const BACKEND_URL = import.meta.env.VITE_API_URL;
+import { useNavigate } from "react-router-dom";
+
+const fields = [
+  { label: "Username", name: "username", type: "text" },
+  { label: "First Name", name: "first_name", type: "text" },
+  { label: "Last Name", name: "last_name", type: "text" },
+  { label: "Email", name: "email_id", type: "email" },
+  { label: "Password", name: "password", type: "password" },
+];
 
 const RegisterPage = () => {
-  const fields = [
-    { label: "First name", name: "first_name", type: "text" },
-    { label: "Last name", name: "last_name", type: "text" },
-    { label: "Email", name: "email", type: "email" },
-    { label: "Password", name: "password", type: "password" },
-  ];
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    username: "", first_name: "", last_name: "", email_id: "", password: "", role: "staff",
+  });
 
-  const [formData, setFormData] = useState({ first_name: "", last_name: "", email: "", password: "" });
-  const [message, setMessage] = useState({ text: "", success: true });
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleChange = (e) => setFormData(f => ({ ...f, [e.target.name]: e.target.value }));
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Basic client-side validation for demo
-    if (!formData.email || !formData.password || formData.password.length < 6) {
-      setMessage({ text: 'Please provide a valid email and password (min 6 chars).', success: false });
-      return;
+    const response = await fetch(`${BACKEND_URL}/signup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData)
+    });
+    const data = await response.json();
+    if (response.ok) {
+      alert("Registration successful!");
+      navigate("/login");
+    } else {
+      alert(data.detail || "Registration failed");
     }
-
-    // For demo: pretend user is created and store a mock token + user id
-    const mockId = Date.now();
-    localStorage.setItem('token', 'mock-token');
-    localStorage.setItem('user_id', String(mockId));
-    localStorage.setItem('first_name', formData.first_name);
-
-    setMessage({ text: 'Account created — redirecting to dashboard...', success: true });
-    setTimeout(() => { window.location.href = '/'; }, 700);
   };
 
   return (
@@ -38,12 +41,6 @@ const RegisterPage = () => {
           <h1 className="text-2xl font-bold text-slate-800">Create your account</h1>
           <p className="text-sm mt-1 text-slate-500">Join StockFlow today</p>
         </div>
-
-        {message.text && (
-          <div className={`mb-4 p-3 rounded text-sm font-medium ${message.success ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-600 border border-red-100'}`}>
-            {message.text}
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {fields.map(({ label, name, type }) => (

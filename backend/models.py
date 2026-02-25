@@ -46,6 +46,5 @@ class Sale(Base):
     quantity_sold = Column(Integer)
     sold_by = Column(Integer, ForeignKey("users.id"))  
     sale_date = Column(String) 
-
     product = relationship("Product")
     staff = relationship("User")

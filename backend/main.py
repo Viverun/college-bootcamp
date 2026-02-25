@@ -13,6 +13,14 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.post("/signup", response_model=schemas.UserResponse)
 def signup(user: schemas.UserCreate, db: Session = Depends(get_db)):
     # Checking if username n email already exists
@@ -270,7 +278,6 @@ def get_reports(db: Session = Depends(get_db), current_user: models.User = Depen
 
         if product.category not in category_report:
             category_report[product.category] = {"quantity": 0, "revenue": 0}
-        product.category and category_report[product.category]["quantity"].__class__ 
         category_report[product.category]["quantity"] += sale.quantity_sold
         category_report[product.category]["revenue"] += revenue
 
